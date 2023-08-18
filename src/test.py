@@ -6,7 +6,7 @@ import ast
 from bs4 import BeautifulSoup as bf
 from bs4.element import Tag
 from util.repo import root
-import xmltojson
+import xmljson
 
 
 def zhihu_question_url(question_id) -> str:
@@ -26,7 +26,7 @@ class Question:
             self,
             question_id: int = None,
             title: str = None,
-            meta:List[Tag]=None,
+            meta: List[Tag] = None,
             answers=None
     ):
         self.title = title
@@ -47,11 +47,11 @@ class Question:
         obj = bf(html_text, 'html.parser')
         if self.title is None:
             self.title = obj.head.title.text
-        question_info = obj.find('div',class_='QuestionPage')
+        question_info = obj.find('div', class_='QuestionPage')
         if self.question_id is None:
             # for example data-za-extra-module='{"card":{"content":{"type":"Question","token":"532925796"}}}'
             data_za_extra_module_dict = ast.literal_eval(question_info.get('data-za-extra-module'))
-            self.question_id = int(data_za_extra_module_dict["card"]["content"]["token"] )
+            self.question_id = int(data_za_extra_module_dict["card"]["content"]["token"])
         print("\twith question id={}".format(self.question_id))
         print("\ttitle:{}".format(self.title))
         if self.meta is None:
@@ -100,9 +100,11 @@ class Answer:
     def __repr__(self):
         return "Answer(id={})".format(self.answer_id)
 
+
 class Paragraph:
     def __init__(self, text):
         self.text = text
+
 
 def parse_answer_block_from_question(answer_block: Tag, recurse: bool):
     index = int(answer_block.get("data-za-index"))
@@ -134,3 +136,5 @@ if __name__ == "__main__":
     question = Question()
     question.parse(recurse=True, text=s)
     print(question.answers[0].content)
+    # todo: add header
+    # todo: use request instead of urlopen
