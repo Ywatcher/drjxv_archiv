@@ -1,0 +1,6 @@
+*.swp
+*.pyc
+*/__pycache__/
+__pycache__/
+.ropeproject
+git_repo
