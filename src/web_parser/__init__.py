@@ -1,5 +1,5 @@
-from answer_parser import AnswerParser
-from question_parser import QuestionParser
+from web_parser.answer_parser import AnswerParser
+from web_parser.question_parser import QuestionParser
 
 
 __all__ = [

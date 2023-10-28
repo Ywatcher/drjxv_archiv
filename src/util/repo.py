@@ -16,6 +16,8 @@ drivers = {  # FIXME: put it into config
     "edge": os.path.join(
         driver_root, "edgedriver_linux64", "msedgedriver")
 }
+git_repo = "/media/ywatcher/ExtDisk1/Files/web_archiv_/git_repo"
+git_repo_test = "/media/ywatcher/ExtDisk1/Files/web_archiv_/git_repo_test"
 
 
 if __name__ == "__main__":

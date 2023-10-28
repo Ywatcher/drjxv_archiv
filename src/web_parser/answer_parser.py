@@ -4,7 +4,7 @@ from typing import List, Dict
 from bs4 import BeautifulSoup as bf
 from selenium.common.exceptions import ElementNotVisibleException
 from util.web_util import zhihu_answer_url, close_button
-
+from time import sleep
 
 class AnswerParser:
     def __init__(
@@ -77,9 +77,13 @@ class AnswerParser:
 
     def start_parsing(self):
         while True:
-            task = self.queue_get_task.get(True, 2)
+            # while self.queue_get_task.empty():
+                # sleep(1)
+            task = self.queue_get_task.get(True, 10)
             if isinstance(task, TaskStopEvent):
+                self.logger.log("stop")
                 self.queue_get_task.put(task)
+                self.logger.log("put")
                 break
             elif isinstance(task, AnswerParseTask):
                 self.parse(
@@ -88,3 +92,4 @@ class AnswerParser:
                 )
             else:
                 raise Exception
+        self.logger.log("out")

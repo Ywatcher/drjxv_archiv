@@ -18,7 +18,7 @@ class QuestionParser:
         self.driver = driver
         self.logger = logger
 
-    def parse(self, question_id):
+    def parse(self, question_id, single_parse=True):
         if self.logger is not None:
             self.logger.log(
                 f"parsing question with id={question_id}")
@@ -32,7 +32,7 @@ class QuestionParser:
             self.driver.get(url)
             close_button(self.driver)
         expand_question(self.driver)
-        self.driver.get(url)
+        # self.driver.get(url)
         answerCount = self.driver.find_element_by_xpath(
             '//div[@class="QuestionPage"]/meta[@itemprop="answerCount"]'
         ).get_attribute("content")
@@ -57,7 +57,7 @@ class QuestionParser:
             dateModified=dateModified,
             **parsed_question_info
         ))
-        self.put_answer_tasks_to_queue(question_id)
+        self.put_answer_tasks_to_queue(question_id, single_parse)
 
     @staticmethod
     def parse_question_block(html_text: str):
@@ -73,7 +73,7 @@ class QuestionParser:
             "content": content
         }
 
-    def put_answer_tasks_to_queue(self, question_id):
+    def put_answer_tasks_to_queue(self, question_id, single_parse=True):
         # FIXME: scroll
         question_answers = self.driver.find_elements_by_xpath(
             '//div[@class="ContentItem AnswerItem"]'
@@ -86,4 +86,13 @@ class QuestionParser:
                     answer_id=q.get_attribute("name")
                 )
             )
+        if single_parse:
+            self.queue_put_task.put(TaskStopEvent())
+        
+    def start_parsing_list(self, question_id_list: list):
+        for question_id in question_id_list:
+            print(question_id)
+            self.parse(question_id, single_parse=False)
+            print("parsed",question_id)
+        print("fin")
         self.queue_put_task.put(TaskStopEvent())
