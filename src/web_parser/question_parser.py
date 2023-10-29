@@ -19,15 +19,13 @@ class QuestionParser:
         self.logger = logger
 
     def parse(self, question_id, single_parse=True):
-        if self.logger is not None:
-            self.logger.log(
-                f"parsing question with id={question_id}")
+        self.log(f"parsing question with id={question_id}")
         url = zhihu_question_url(question_id)
         try:
             self.driver.get(url)
             close_button(self.driver)
         except ElementNotVisibleException:
-            print("try again")
+            self.log("try again")
             # FIXME: close f12
             self.driver.get(url)
             close_button(self.driver)
@@ -63,10 +61,13 @@ class QuestionParser:
     def parse_question_block(html_text: str):
         obj = bf(html_text, 'html.parser')
         title = obj.find('h1', class_="QuestionHeader-title").text
-        content = obj.find(
-            'div',
-            class_="QuestionRichText QuestionRichText--expandable"
-        ).find('span').contents
+        try:
+            content = obj.find(
+                'div',
+                class_="QuestionRichText QuestionRichText--expandable"
+            ).find('span').contents
+        except Exception as e:
+            content = ""
 
         return {
             "title": title,
@@ -94,7 +95,11 @@ class QuestionParser:
         for question_id in question_id_list:
             print(question_id)
             self.parse(question_id, single_parse=False)
-            print("parsed",question_id)
-        print("fin")
+            self.log(f"parsed {question_id}")
+        self.log("fin")
         self.queue_put_task.put(TaskStopEvent())
         self.driver.close()
+
+    def log(self, *args, **kwargs):
+        if self.logger is not None:
+            self.logger.log(*args, **kwargs)

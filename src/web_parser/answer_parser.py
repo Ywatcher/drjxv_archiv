@@ -6,6 +6,7 @@ from selenium.common.exceptions import ElementNotVisibleException
 from util.web_util import zhihu_answer_url, close_button
 from time import sleep
 
+
 class AnswerParser:
     def __init__(
         self,
@@ -20,15 +21,13 @@ class AnswerParser:
         self.logger = logger
 
     def parse(self, answer_id, question_id=None):
-        if self.logger is not None:
-            self.logger.log(
-                f"parsing answer with id={answer_id}")
+        self.log(f"parsing answer with id={answer_id}")
         url = zhihu_answer_url(answer_id=answer_id)
         try:
             self.driver.get(url)
             close_button(self.driver)
         except ElementNotVisibleException:
-            print("try again")
+            self.log("try again")
             # FIXME: close f12
             self.driver.get(url)
             close_button(self.driver)
@@ -79,10 +78,10 @@ class AnswerParser:
         while True:
             task = self.queue_get_task.get(True, 10)
             if isinstance(task, TaskStopEvent):
-                self.logger.log("stop")
+                self.log("stop")
                 # may block if without `nowait`
                 self.queue_get_task.put_nowait(task)
-                self.logger.log("put")
+                self.log("put")
                 # to_break = True
                 break
             elif isinstance(task, AnswerParseTask):
@@ -92,5 +91,10 @@ class AnswerParser:
                 )
             else:
                 raise Exception
-        self.logger.log("out")
-        self.driver.close() #FIXME
+
+        self.log("out")
+        self.driver.close()  # FIXME
+
+    def log(self, *args, **kwargs):
+        if self.logger is not None:
+            self.logger.log(*args, **kwargs)

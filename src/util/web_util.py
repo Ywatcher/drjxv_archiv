@@ -19,18 +19,22 @@ def close_button(driver):
 
 def expand_question(driver):
     expand_button = None
-    all_buttons = driver.find_element_by_xpath(
-        '//div[@class="QuestionHeader-content"]'
-    ).find_element_by_xpath(
-        '//div[@class="QuestionRichText QuestionRichText--expandable QuestionRichText--collapsed"]'
-    ).find_elements_by_xpath("//button")
-    # FIXME: do not press if button does not exist
-    assert all_buttons[5].text == '显示全部'
-    expand_button = all_buttons[5]
+    try:
+        all_buttons = driver.find_element_by_xpath(
+            '//div[@class="QuestionHeader-content"]'
+        ).find_element_by_xpath(
+            '//div[@class="QuestionRichText QuestionRichText--expandable QuestionRichText--collapsed"]'
+        ).find_elements_by_xpath("//button")
+        # FIXME: do not press if button does not exist
+        assert all_buttons[5].text == '显示全部'
+        expand_button = all_buttons[5]
     # for b in all_buttons:
     #     b.text
     #     if b.text == '显示全部':
     #         print(b.text)
     #         expand_button = b
     #     break
-    expand_button.click()
+        expand_button.click()
+    except Exception as e:
+        # FIXME : if no such button
+        pass

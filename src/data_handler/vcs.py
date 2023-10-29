@@ -26,10 +26,10 @@ class GitOperator:
         self.repo_path = repo_path
         self.repo = Repo(repo_path)
         self.commiter = Actor(name=commiter_name, email=commiter_email)
-        
+
     def __enter__(self):
         return self
-    
+
     def __exit__(self, exc_type, exc_value, tb):
         pass
 

@@ -79,8 +79,9 @@ def init_database_tables(
         print(e)
         return -1
 
-
     # TODO: put writing code into buffer and execute them all together
+
+
 class DataBase:
     @staticmethod
     def init_database(
@@ -104,11 +105,11 @@ class DataBase:
         db_file: str
     ):
         self.db_file = db_file
-        self.conn = None
+        # self.conn: sqlite3.Connection = None
 
     def __enter__(self):
         self.conn = sqlite3.connect(self.db_file)
-        # self.cursor = 
+        # self.cursor =
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
@@ -192,7 +193,6 @@ class DataBase:
         """)
         if to_commit:
             self.conn.commit()
-        
 
     def add_answer_version(
         self,
@@ -240,6 +240,6 @@ class DataBase:
         {answerCount})""")
         if to_commit:
             self.conn.commit()
-            
+
     def commit(self):
         self.conn.commit()

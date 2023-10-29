@@ -1,6 +1,5 @@
 from common import AnswerBriefInfo, QuestionBriefInfo
 from typing import Union
-import datetime
 from data_handler.database import DataBase
 from data_handler.vcs import GitOperator
 from multiprocessing import Queue
@@ -32,11 +31,11 @@ class Master:
         result_queue: Queue
     ):
         with DataBase(self.db_path) as db_instance, \
-            GitOperator(
-                self.git_repo_path,
-                commiter_email=commiter_email,
-                commiter_name=commiter_name
-            ) as git_repo_insance:
+                GitOperator(
+                    self.git_repo_path,
+                    commiter_email=commiter_email,
+                    commiter_name=commiter_name
+                ) as git_repo_insance:
             while not result_queue.empty():
                 result = result_queue.get()
                 self.handle(
@@ -83,7 +82,7 @@ class Master:
                     f.write(file_content)
                 git_latest_commit = git_operator.commit_file(
                     file_name=filename,
-                    message="..",  # TODO
+                    message=self.format_answer_commit_message(result),
                     modified_datetime=result.dateModified_d,
                     fetched_datetime=fetchedDatetime_d,
                     parent_sha=head
@@ -134,7 +133,7 @@ class Master:
                     f.write(file_content)
                 git_latest_commit = git_operator.commit_file(
                     file_name=filename,
-                    message="..",  # TODO
+                    message=self.format_question_commit_message(result),
                     modified_datetime=result.dateModified_d,
                     fetched_datetime=fetchedDatetime_d,
                     parent_sha=head
@@ -142,7 +141,7 @@ class Master:
                 )
                 sha = git_latest_commit.hexsha  # FIXME
                 try:
-                    db.update_git_head(sha=sha,to_commit=False)
+                    db.update_git_head(sha=sha, to_commit=False)
                     db.add_question_version(
                         question_id=int(question_id),
                         commit_id=sha,
@@ -156,3 +155,20 @@ class Master:
                     raise e
         else:
             raise NotImplementedError
+
+    @staticmethod
+    def format_answer_commit_message(answer: AnswerBriefInfo) -> str:
+        aid = answer.answer_id
+        qid = answer.question_id
+        text = answer.content[0].text
+        if len(text) >= 30:
+            text = text[:50] + "..."
+        return "answer `{}`({}) from question {}".format(
+            text, aid, qid
+        )
+
+    @staticmethod
+    def format_question_commit_message(question: QuestionBriefInfo) -> str:
+        qid = question.question_id
+        title = question.title
+        return "question `{}`({})".format(title, qid)
