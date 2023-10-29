@@ -58,8 +58,6 @@ class GitOperator:
             parent_commit = self.get_commit_by_sha(parent_sha)
         except BaseException:
             parent_commit = self.repo.head.commit
-        print(fetched_datetime.tzinfo)
-        print(modified_datetime.tzinfo)
         self.repo.index.commit(
             parent_commits=[parent_commit],
             message=message,
