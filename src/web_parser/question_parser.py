@@ -88,7 +88,8 @@ class QuestionParser:
             )
         if single_parse:
             self.queue_put_task.put(TaskStopEvent())
-        
+            self.driver.close()
+
     def start_parsing_list(self, question_id_list: list):
         for question_id in question_id_list:
             print(question_id)
@@ -96,3 +97,4 @@ class QuestionParser:
             print("parsed",question_id)
         print("fin")
         self.queue_put_task.put(TaskStopEvent())
+        self.driver.close()

@@ -1,15 +1,13 @@
 from dataclasses import dataclass
 from typing import Union, Dict
-from util.file_rendering import to_markdown
+from util.file_rendering import to_markdown, tags_to_str
+from util.time import str2date
 import datetime
 
+from bs4.element import Tag
 # TODO: mv to util
 
 
-def str2date(strdate: str) -> datetime.datetime:
-    # format: "%Y-%m-%dT%H:%M:%S.%fZ"
-    # example: "2023-10-13T18:14:15.000Z"
-    return datetime.datetime.fromisoformat(strdate)
 
 
 @dataclass
@@ -17,7 +15,7 @@ class AnswerBriefInfo:
     question_id: str
     answer_id: str
     author: str
-    content: str  # html like
+    content: list[Tag]  # html like
     upvoteCount: Union[int, str]
     dateCreated: str
     dateModified: str
@@ -34,7 +32,7 @@ class AnswerBriefInfo:
                 "commentCount": self.commentCount
             },
             title=None,
-            content=self.content
+            content=tags_to_str(self.content)
         )
 
     @property
@@ -55,7 +53,7 @@ class CommentBriefInfo:
 class QuestionBriefInfo:
     question_id: str
     title: str
-    content: str
+    content: list[Tag]
     answerCount: str
     dateCreated: str
     dateModified: str
@@ -70,7 +68,7 @@ class QuestionBriefInfo:
                 "title": self.title
             },
             title=self.title,
-            content=self.content
+            content=tags_to_str(self.content)
         )
 
     @property

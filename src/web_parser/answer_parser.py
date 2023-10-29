@@ -77,13 +77,13 @@ class AnswerParser:
 
     def start_parsing(self):
         while True:
-            # while self.queue_get_task.empty():
-                # sleep(1)
             task = self.queue_get_task.get(True, 10)
             if isinstance(task, TaskStopEvent):
                 self.logger.log("stop")
-                self.queue_get_task.put(task)
+                # may block if without `nowait`
+                self.queue_get_task.put_nowait(task)
                 self.logger.log("put")
+                # to_break = True
                 break
             elif isinstance(task, AnswerParseTask):
                 self.parse(
@@ -93,3 +93,4 @@ class AnswerParser:
             else:
                 raise Exception
         self.logger.log("out")
+        self.driver.close() #FIXME

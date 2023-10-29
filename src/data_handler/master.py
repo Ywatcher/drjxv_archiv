@@ -1,9 +1,10 @@
 from common import AnswerBriefInfo, QuestionBriefInfo
 from typing import Union
 import datetime
-from database import DataBase
-from vcs import GitOperator
+from data_handler.database import DataBase
+from data_handler.vcs import GitOperator
 from multiprocessing import Queue
+from util.time import current_time
 
 
 class Master:
@@ -19,29 +20,29 @@ class Master:
 
     @staticmethod
     def get_answer_filename(answer_id) -> str:
-        return f"answer_{answer_id}"
+        return f"answer_{answer_id}.md"
 
     @staticmethod
     def get_question_filename(question_id) -> str:
-        return f"question_{question_id}"
+        return f"question_{question_id}.md"
 
     def start(
         self,
         commiter_name: str, commiter_email: str,
         result_queue: Queue
     ):
-        db_instance = DataBase(self.db_path)
-        git_repo_insance = GitOperator(
-            self.git_repo_path,
-            commiter_email=commiter_email,
-            commiter_name=commiter_name
-        )
-        while not result_queue.empty():
-            result = result_queue.get()
-            self.handle(
-                result=result,
-                db=db_instance, git_operator=git_repo_insance
-            )
+        with DataBase(self.db_path) as db_instance, \
+            GitOperator(
+                self.git_repo_path,
+                commiter_email=commiter_email,
+                commiter_name=commiter_name
+            ) as git_repo_insance:
+            while not result_queue.empty():
+                result = result_queue.get()
+                self.handle(
+                    result=result,
+                    db=db_instance, git_operator=git_repo_insance
+                )
 
     def handle(
         self,
@@ -49,6 +50,8 @@ class Master:
         git_operator: GitOperator,
         result: Union[AnswerBriefInfo, QuestionBriefInfo]
     ):
+        # TODO: try do db operation
+        # except revert git operation
         if isinstance(result, AnswerBriefInfo):
             answer_id = result.answer_id
             filename = self.get_answer_filename(answer_id)
@@ -67,11 +70,12 @@ class Master:
                     answer_id=int(answer_id),
                     question_id=int(result.question_id),
                     dateCreated=result.dateCreate_d,
+                    to_commit=False
                     # FIXME: author id
                 )
                 to_update = True
             if to_update:
-                fetchedDatetime_d = datetime.datetime.now()
+                fetchedDatetime_d = current_time()
                 with open(
                     git_operator.get_full_name(filename),
                     "w"
@@ -86,14 +90,20 @@ class Master:
                     # author = .., author_url=..
                 )
                 sha = git_latest_commit.hexsha  # FIXME
-                db.update_git_head(sha=sha)
-                db.add_answer_version(
-                    answer_id=int(answer_id),
-                    commit_id=sha,
-                    dateFetched=fetchedDatetime_d,
-                    dateModified=result.dateModified_d,
-                    commentCount=int(result.commentCount)
-                )
+                try:
+                    db.update_git_head(sha=sha, to_commit=False)
+                    db.add_answer_version(
+                        answer_id=int(answer_id),
+                        commit_id=sha,
+                        dateFetched=fetchedDatetime_d,
+                        dateModified=result.dateModified_d,
+                        commentCount=int(result.commentCount),
+                        to_commit=True
+                    )
+                except Exception as e:
+                    # TODO: revert git operation
+                    raise e
+
         elif isinstance(result, QuestionBriefInfo):
             question_id = result.question_id
             filename = self.get_question_filename(question_id)
@@ -110,12 +120,13 @@ class Master:
             else:
                 db.add_question(
                     question_id=int(question_id),
-                    dateCreated=result.dateCreate_d
+                    dateCreated=result.dateCreate_d,
+                    to_commit=False
                     # FIXME: author id
                 )
                 to_update = True
             if to_update:
-                fetchedDatetime_d = datetime.datetime.now()
+                fetchedDatetime_d = current_time()
                 with open(
                     git_operator.get_full_name(filename),
                     "w"
@@ -130,13 +141,18 @@ class Master:
                     # author = .., author_url=..
                 )
                 sha = git_latest_commit.hexsha  # FIXME
-                db.update_git_head(sha=sha)
-                db.add_question_version(
-                    question_id=int(question_id),
-                    commit_id=sha,
-                    dateFetched=fetchedDatetime_d,
-                    dateModified=result.dateCreate_d,
-                    answerCount=int(result.answerCount)
-                )
+                try:
+                    db.update_git_head(sha=sha,to_commit=False)
+                    db.add_question_version(
+                        question_id=int(question_id),
+                        commit_id=sha,
+                        dateFetched=fetchedDatetime_d,
+                        dateModified=result.dateCreate_d,
+                        answerCount=int(result.answerCount),
+                        to_commit=True
+                    )
+                except Exception as e:
+                    # TODO: revert git operation
+                    raise e
         else:
             raise NotImplementedError

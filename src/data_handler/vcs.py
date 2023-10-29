@@ -26,6 +26,12 @@ class GitOperator:
         self.repo_path = repo_path
         self.repo = Repo(repo_path)
         self.commiter = Actor(name=commiter_name, email=commiter_email)
+        
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, exc_type, exc_value, tb):
+        pass
 
     def commit_file(
         self,
@@ -52,6 +58,8 @@ class GitOperator:
             parent_commit = self.get_commit_by_sha(parent_sha)
         except BaseException:
             parent_commit = self.repo.head.commit
+        print(fetched_datetime.tzinfo)
+        print(modified_datetime.tzinfo)
         self.repo.index.commit(
             parent_commits=[parent_commit],
             message=message,
@@ -102,3 +110,6 @@ class GitOperator:
 
     def get_full_name(self, file_name) -> str:
         return os.path.join(self.repo_path, file_name)
+
+    def revert_commit(self, sha):
+        raise NotImplemented

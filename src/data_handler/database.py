@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS {title_4_answer_table}VCS (
     commitId text PRIMARY KEY,
     answerId interger NOT NULL,
     dateFetched text,
-    dateModified text
+    dateModified text,
     commentCount integer
     )
 """
@@ -27,7 +27,7 @@ query_create_question_table = f"""
 CREATE TABLE IF NOT EXISTS {title_4_question_table} (
     id integer PRIMARY KEY,
     authorId integer,
-    dateCreated text,
+    dateCreated text
     )
 """
 query_create_question_vcs_table = f"""
@@ -47,11 +47,11 @@ CREATE TABLE IF NOT EXISTS {title_4_question_table}VCS (
 # unexpected effects caused by
 # manual git operations
 query_create_head_table = f"""
-CREATE TABLE GitHead (
+CREATE TABLE IF NOT EXISTS GitHead(
     id INTEGER PRIMARY KEY CHECK (id = 0),
     sha text
 );
-CREATE TRIGGER git_head_no_insert
+CREATE TRIGGER IF NOT EXISTS git_head_no_insert
 BEFORE INSERT ON GitHead
 WHEN (SELECT COUNT(*) FROM GitHead) >= 1   -- limit here
 BEGIN
@@ -80,6 +80,7 @@ def init_database_tables(
         return -1
 
 
+    # TODO: put writing code into buffer and execute them all together
 class DataBase:
     @staticmethod
     def init_database(
@@ -103,11 +104,14 @@ class DataBase:
         db_file: str
     ):
         self.db_file = db_file
+        self.conn = None
 
-    def __start__(self):
+    def __enter__(self):
         self.conn = sqlite3.connect(self.db_file)
+        # self.cursor = 
+        return self
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, tb):
         self.conn.close()
 
     def get_git_head(self) -> str:
@@ -119,7 +123,7 @@ class DataBase:
         l = list(result)
         return l[0][0]
 
-    def update_git_head(self, sha: str):
+    def update_git_head(self, sha: str, to_commit=False):
         c = self.conn.cursor()
         if is_empty(c, "GitHead"):
             c.execute(f"""
@@ -133,20 +137,21 @@ class DataBase:
             SET sha = '{sha}'
             WHERE id==0
             """)
-        self.conn.commit()
+        if to_commit:
+            self.conn.commit()
 
     def has_answer(self, answer_id: str) -> bool:
         c = self.conn.cursor()
-        return is_empty(
+        return not is_empty(
             c, title_4_answer_table,
-            condition=f"WHERE answerId=={answer_id}"
+            condition=f"WHERE id=={answer_id}"
         )
 
     def has_question(self, question_id: str) -> bool:
         c = self.conn.cursor()
-        return is_empty(
+        return not is_empty(
             c, title_4_question_table,
-            condition=f"WHERE questionId=={question_id}"
+            condition=f"WHERE id=={question_id}"
         )
 
     def _date2str(self, d: datetime.datetime) -> str:
@@ -157,6 +162,7 @@ class DataBase:
         self, answer_id: int,
         dateCreated: datetime.datetime,
         question_id: int, author_id="NULL",  # FIXME
+        to_commit=False
     ):
         c = self.conn.cursor()
         dateCreated_s = self._date2str(dateCreated)
@@ -167,13 +173,15 @@ class DataBase:
         ({answer_id}, {author_id},
         {question_id}, '{dateCreated_s}')
         """)
-        self.conn.commit()
+        if to_commit:
+            self.conn.commit()
 
     def add_question(
         self,
         dateCreated: datetime.datetime,
         question_id: int,
         author_id="NULL",  # FIXME
+        to_commit=False
     ):
         c = self.conn.cursor()
         dateCreated_s = self._date2str(dateCreated)
@@ -182,14 +190,17 @@ class DataBase:
         (id, authorId, dateCreated)
         VALUES ({question_id}, {author_id}, '{dateCreated_s}')
         """)
-        self.conn.commit()
+        if to_commit:
+            self.conn.commit()
+        
 
     def add_answer_version(
         self,
         answer_id: int, commit_id: str,
         dateFetched: datetime.datetime,
         dateModified: datetime.datetime,
-        commentCount: int
+        commentCount: int,
+        to_commit=False
     ):
         #  dateFetched, dateModified,
         c = self.conn.cursor()
@@ -204,14 +215,16 @@ class DataBase:
         ('{commit_id}',{answer_id},
         '{dateFetched_s}','{dateModified_s}',
         {commentCount})""")
-        self.conn.commit()
+        if to_commit:
+            self.conn.commit()
 
     def add_question_version(
         self,
         question_id: int, commit_id: str,
         dateFetched: datetime.datetime,
         dateModified: datetime.datetime,
-        answerCount: int
+        answerCount: int,
+        to_commit=False
     ):
         c = self.conn.cursor()
         dateFetched_s = self._date2str(dateFetched)
@@ -223,6 +236,10 @@ class DataBase:
         answerCount)
         VALUES
         ('{commit_id}', {question_id},
-        '{dateFetched_s}', '{dateModified_s}'
+        '{dateFetched_s}', '{dateModified_s}',
         {answerCount})""")
+        if to_commit:
+            self.conn.commit()
+            
+    def commit(self):
         self.conn.commit()
