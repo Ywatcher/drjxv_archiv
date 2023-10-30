@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from data_handler.database import DataBase
 from git import Repo
 import os
@@ -8,12 +10,7 @@ def make_abs(path: str) -> str:
     if os.path.isabs(path):
         return path
     else:
-        p = os.path.normpath(
-            os.path.join(
-                os.getcwd(),
-                path
-            )
-        )
+        p = os.path.normpath(os.path.join(os.getcwd(), path))
         return p
 
 

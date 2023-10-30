@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 
 def zhihu_question_url(question_id) -> str:

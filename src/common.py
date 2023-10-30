@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from dataclasses import dataclass
 from typing import Union, Dict
 from util.file_rendering import to_markdown, tags_to_str

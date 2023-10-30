@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 def is_empty(cursor, table: str, condition: str = '') -> bool:
     # condition: empty or begin with "WHERE"
     result = cursor.execute(

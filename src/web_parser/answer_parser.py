@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from multiprocessing import Queue
 from common import AnswerBriefInfo, AnswerParseTask, TaskStopEvent
 from typing import List, Dict

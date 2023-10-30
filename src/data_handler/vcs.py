@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from git.util import Actor
 from datetime import datetime
 import os

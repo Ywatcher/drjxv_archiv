@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import yaml
 from typing import Optional
 from bs4.element import Tag

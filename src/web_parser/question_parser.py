@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from multiprocessing import Queue
 from common import QuestionBriefInfo, AnswerParseTask, TaskStopEvent
 from bs4 import BeautifulSoup as bf

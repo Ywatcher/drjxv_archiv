@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from common import AnswerBriefInfo, QuestionBriefInfo
 from typing import Union
 from data_handler.database import DataBase
