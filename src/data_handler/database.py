@@ -4,6 +4,7 @@ import datetime
 import sqlite3
 from sqlite3 import Error
 from util.db import is_empty
+from util.time import date2str
 # answer_table:
 title_4_answer_table = "Answers"
 title_4_question_table = "Questions"
@@ -11,7 +12,7 @@ title_4_comment_table = "Comments"
 query_create_answer_table = f"""
 CREATE TABLE IF NOT EXISTS {title_4_answer_table} (
     id integer PRIMARY KEY,
-    authorId integer,
+    authorId text,
     questionId integer NOT NULL,
     dateCreated text
     )
@@ -65,9 +66,6 @@ END;
 def init_database_tables(
     conn: sqlite3.Connection
 ) -> int:
-    # TODO: create database file,
-    # assert that file does not exist
-    # if forced create: overwrite=True
     try:
         c = conn.cursor()
         c.execute(query_create_question_table)
@@ -80,8 +78,6 @@ def init_database_tables(
     except Error as e:
         print(e)
         return -1
-
-    # TODO: put writing code into buffer and execute them all together
 
 
 class DataBase:
@@ -158,8 +154,7 @@ class DataBase:
         )
 
     def _date2str(self, d: datetime.datetime) -> str:
-        # FIXME
-        return str(d)
+        return date2str(d)
 
     def add_answer(
         self, answer_id: int,

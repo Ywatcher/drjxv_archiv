@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from typing import Optional
 from data_handler.database import DataBase
 from git import Repo
 import os
-from util.repo import get_db_path, get_vcs_path
+from config import get_config_path, get_db_path, get_vcs_path, get_config_path
+from config import default_owner_email, default_owner_name
+from util.file_rendering import to_config_file
 
 
 def make_abs(path: str) -> str:
@@ -16,22 +19,32 @@ def make_abs(path: str) -> str:
 
 def init_new_repo(
     repo_path: str,
-    author: str,
+    owner_name: Optional[str] = None,
+    owner_email: Optional[str] = None,
     logger=None
 ):
     repo_path = make_abs(repo_path)
+    if owner_name is None:
+        owner_name = default_owner_name
+    if owner_email is None:
+        owner_email = default_owner_email
+    owner = "{}<{}>".format(owner_name, owner_email)
     try:
         assert not os.path.exists(repo_path)
     except Exception as e:
         raise FileExistsError("Path {} already exists.".format(repo_path))
-
+    # create a new repo
     os.mkdir(repo_path)
     if logger is not None:
         logger.log(f"created dir: {repo_path}")
+    # write to config file
+    with open(get_config_path(repo_path), "w") as config_file:
+        file_content = to_config_file(owner_name, owner_email)
+        config_file.write(file_content)
+    # init vcs and db
     vcs_path = get_vcs_path(repo_path)
     db_path = get_db_path(repo_path)
     os.mkdir(vcs_path)
-
     # os.mkdir(db_path)
     DataBase.init_database(db_path)
     if logger is not None:
@@ -39,13 +52,12 @@ def init_new_repo(
     repo = Repo.init(vcs_path, bare=False)
     if logger is not None:
         logger.log(f"git repo created: {vcs_path}")
-
     try:
         repo.git.config(
             "--global", "--add", "safe.directory", vcs_path)
         repo.git.commit(
             "--allow-empty", "-m", "create_repo",
-            author=author
+            author=owner
         )
         with DataBase(db_path) as db:
             db.update_git_head(
@@ -58,7 +70,7 @@ def init_new_repo(
 
 
 def main():
-    from util.repo import root
+    from config import project_root
     repo_path = "../../test_repo_3"
     author = "test<test>"
     init_new_repo(repo_path, author)

@@ -12,10 +12,6 @@ def str2date(strdate: str) -> datetime.datetime:
         strdate[:-1] +
         "+00:00"  # FIXME
     )
-    # return datetime.datetime.strptime(
-    #     strdate,
-    #     "%Y-%m-%dT%H:%M:%S.%fZ"
-    # )
 
 
 def date2str(date: datetime.datetime) -> str:

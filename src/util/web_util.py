@@ -10,6 +10,9 @@ def zhihu_answer_url(answer_id) -> str:
 
 
 def close_button(driver):
+    """
+    to close the popup when entering a page
+    """
     close_buttons = driver.find_elements_by_xpath(
         # "Button Modal-closeButton Button--plain"
         '//button[@class="Button Modal-closeButton Button--plain"]'
