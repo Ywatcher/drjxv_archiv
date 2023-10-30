@@ -27,7 +27,7 @@ class Master:
     def get_question_filename(question_id) -> str:
         return f"question_{question_id}.md"
 
-    def start(
+    def start_parse(
         self,
         commiter_name: str, commiter_email: str,
         result_queue: Queue
@@ -51,8 +51,6 @@ class Master:
         git_operator: GitOperator,
         result: Union[AnswerBriefInfo, QuestionBriefInfo]
     ):
-        # TODO: try do db operation
-        # except revert git operation
         if isinstance(result, AnswerBriefInfo):
             answer_id = result.answer_id
             filename = self.get_answer_filename(answer_id)
@@ -90,7 +88,7 @@ class Master:
                     parent_sha=head
                     # author = .., author_url=..
                 )
-                sha = git_latest_commit.hexsha  # FIXME
+                sha = git_latest_commit.hexsha
                 try:
                     db.update_git_head(sha=sha, to_commit=False)
                     db.add_answer_version(
@@ -102,7 +100,8 @@ class Master:
                         to_commit=True
                     )
                 except Exception as e:
-                    # TODO: revert git operation
+                    git_operator.revert_commit(head)
+                    db.cancel()
                     raise e
 
         elif isinstance(result, QuestionBriefInfo):
@@ -141,7 +140,7 @@ class Master:
                     parent_sha=head
                     # author = .., author_url=..
                 )
-                sha = git_latest_commit.hexsha  # FIXME
+                sha = git_latest_commit.hexsha
                 try:
                     db.update_git_head(sha=sha, to_commit=False)
                     db.add_question_version(
@@ -153,7 +152,8 @@ class Master:
                         to_commit=True
                     )
                 except Exception as e:
-                    # TODO: revert git operation
+                    git_operator.revert_commit(head)
+                    db.cancel()
                     raise e
         else:
             raise NotImplementedError
@@ -174,3 +174,13 @@ class Master:
         qid = question.question_id
         title = question.title
         return "question `{}`({})".format(title, qid)
+
+    @staticmethod
+    def format_commit_message(
+            result: Union[QuestionBriefInfo, AnswerBriefInfo]) -> str:
+        if isinstance(result, QuestionBriefInfo):
+            return Master.format_question_commit_message(result)
+        elif isinstance(result, AnswerBriefInfo):
+            return Master.format_answer_commit_message(result)
+        else:
+            raise TypeError

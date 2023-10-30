@@ -240,3 +240,6 @@ class DataBase:
 
     def commit(self):
         self.conn.commit()
+
+    def cancel(self):
+        pass
