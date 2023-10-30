@@ -1,9 +1,11 @@
 import os
 from pathlib import Path
 
+# path to code repository
 root = Path(__file__).parent.parent.parent.absolute()
 driver_root = os.path.join(root, "driver")
-database_root = os.path.join(root, "archiv_db")
+# path to web_driver
+
 drivers = {  # FIXME: put it into config
     "chrome": os.path.join(
         driver_root,
@@ -16,8 +18,32 @@ drivers = {  # FIXME: put it into config
     "edge": os.path.join(
         driver_root, "edgedriver_linux64", "msedgedriver")
 }
-git_repo = "/media/ywatcher/ExtDisk1/Files/web_archiv_/git_repo"
-git_repo_test = "/media/ywatcher/ExtDisk1/Files/web_archiv_/git_repo_test"
+
+
+# path to archiv repository
+# .
+# ├── .database
+# │   └── sqlite_data.db
+# └── vcs
+#     ├── ...
+#     ├── answer_xxxx.md
+#     ├── .git
+#     └── question_xxxx.md
+
+def get_vcs_path(archiv_repo_path: str) -> str:
+    return os.path.join(archiv_repo_path, "vcs")
+
+
+def get_db_path(archiv_repo_path: str) -> str:
+    return os.path.join(archiv_repo_path, ".sqlite_database.db")
+
+
+def answer_file_format(aid) -> str:
+    return f"answer_{aid}.md"
+
+
+def question_file_format(qid) -> str:
+    return f"question_{qid}.md"
 
 
 if __name__ == "__main__":
