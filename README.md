@@ -1,11 +1,20 @@
 # Drjxu Archiv
 知-乎-爬-取-与-存-档-程-序
 
+
 ## 功能
 该项目使用 selenium 模拟浏览器提取问题和回答信息，并在本地
 存档，以及记录它们的版本；由于使用模拟浏览器的方式，它的效
 率并不支持用于爬取用于大数据分析的材料，或者用于对网站进行
 恶意攻击；但您可以使用它相对高效且有条理地记录您的阅读。
+
+
+git log 管理版本:
+![Screenshot from 2023-11-02 02-18-11](https://github.com/Ywatcher/drjxv_archiv/assets/93801008/de7efcd1-6bcd-4205-b1ab-70829fc83da0)
+
+在 obsidian 中查看回答：
+![Screenshot from 2023-11-02 02-23-39](https://github.com/Ywatcher/drjxv_archiv/assets/93801008/aa012551-6b3c-491f-8734-9204bd7b1172)
+
 
 ## 环境依赖
 该项目基于 python, 关键依赖如下：
