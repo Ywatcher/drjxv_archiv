@@ -5,8 +5,7 @@
 ## 功能
 该项目使用 selenium 模拟浏览器提取问题和回答信息，并在本地
 存档，以及记录它们的版本；由于使用模拟浏览器的方式，它的效
-率并不支持用于爬取用于大数据分析的材料，或者用于对网站进行
-恶意攻击；但您可以使用它相对高效且有条理地记录您的阅读。<br>
+率并不支持用于爬取用于大数据分析的材料；但您可以使用它相对高效且有条理地记录您的阅读。<br>
 问题和答案，以及它们的历史版本使用 sqlite3 关系型数据库进行
 管理；不久将对多份分别管理的存档的合并进行实现；
 
@@ -43,15 +42,16 @@ ipykernel==6.25.1 # 如果你要使用 jupyter
 	电脑的路径，以及其他 
 
 #### 安装 git 
-git 是一个版本管理工具，这个项目通过它的 python binding 来
-自动化地调用它，以实现网络内容的版本管理；如果您还没有安装
+git 是一个版本管理工具，这个项目使用它的 python binding，
+以实现网络内容的版本管理；如果您还没有安装
 git，请在您的计算机上安装它；
 
 #### 准备 webdriver
-各大浏览器都有相应的 webdriver，这是一个可执行程序，它以可
+各大浏览器都有相应的 webdriver，这是一个可执行程序，以可
 调试的方式运行浏览器；selenium 通过运行 webdriver 来查看网
 站；<br>
 可以参考[链接](https://www.selenium.dev/documentation/webdriver/troubleshooting/errors/driver_location/#download-the-driver)
+进行下载
 
 #### 在 `src/config.py` 中作必要的配置
 必要配置为修改字典 `drivers` 中的 webdriver 路径为其真实所
@@ -61,9 +61,7 @@ git，请在您的计算机上安装它；
 使用命令行调用 python 脚本: <br>
 正在实现
 使用 jupyter notebook:<br>
-- `src/controller.ipynb` 通过一步步定义该项目的组成部分，
-	来初始化仓库或爬取回答；
-- （正在实现）通过直接调用高度封装后的接口
+- 运行 `src/controller.ipynb` 
 
 ## 项目结构
 ```
@@ -92,7 +90,7 @@ git，请在您的计算机上安装它；
         └── question_parser.py # 问题爬取器
 
 ```
-该项目分为两个主要部分，分别是爬取部分，和管理部分；<br>
+该项目分为两个主要部分，分别是爬取部分和管理部分；<br>
 其中爬取部分分为问题爬取器和答案爬取器，每个爬取器对象
 会使用一个 webdriver 并单独占据一个进程，在爬取时会使用
 进程队列`multiprocess.Queue`进行通信；这其中涉及两个队列
