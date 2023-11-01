@@ -92,5 +92,8 @@ def question_file_format(qid) -> str:
 # parameters when creating a new archiv repository.
 default_owner_name = "me"
 default_owner_email = "me@email"
+
+# numbers of answer parser processes
+nr_answer_parsers = 3
 if __name__ == "__main__":
     print(project_root)

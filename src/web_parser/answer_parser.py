@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from multiprocessing import Queue
+
+from git import exc
 from common import AnswerBriefInfo, AnswerParseTask, TaskStopEvent
 from typing import List, Dict
 from bs4 import BeautifulSoup as bf
@@ -57,10 +59,19 @@ class AnswerParser:
     @staticmethod
     def parse_content_block(html_text: str) -> Dict[str, str]:
         obj = bf(html_text, 'html.parser')
-        author_info = obj.find('div',class_='AuthorInfo')
-        author_name = author_info.find('meta',itemprop='name').get('content')
-        # author_url =author_info.find('meta',itemprop='url').get('content')
-        author_url = author_info.find('a',class_='UserLink-link').get('href') # real url
+        author_info = obj.find('div', class_='AuthorInfo')
+        try:
+            author_name = author_info.find(
+                'meta', itemprop='name').get('content')
+        except Exception as e:
+            author_name = "unknown"
+        try:
+            author_url = author_info.find(
+                'a', class_='UserLink-link').get('href')  # real url
+            # author_url =author_info.find('meta',itemprop='url').get('content')
+        except Exception as e:
+            author_url = "unknown"
+
         content = obj.find(
             'div', class_='RichContent-inner').find('span').contents
         upvoteCount = obj.find('meta', itemprop="upvoteCount").get("content")

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from os.path import isdir
+from pathlib import Path
 from typing import Optional
 from data_handler.database import DataBase
 from git import Repo
@@ -23,16 +25,30 @@ def init_new_repo(
     owner_email: Optional[str] = None,
     logger=None
 ):
+
     repo_path = make_abs(repo_path)
     if owner_name is None:
         owner_name = default_owner_name
     if owner_email is None:
         owner_email = default_owner_email
     owner = "{}<{}>".format(owner_name, owner_email)
-    try:
-        assert not os.path.exists(repo_path)
-    except Exception as e:
-        raise FileExistsError("Path {} already exists.".format(repo_path))
+    if os.path.exists(repo_path):
+        if not os.path.isdir(repo_path):
+            raise NotADirectoryError(
+                f"{repo_path} exists, and is not a directory")
+        elif len(os.listdir(repo_path)) > 0:
+            raise OSError(
+                f"{repo_path} exists, and is not empty"
+            )
+    else:
+        parent_path = Path(repo_path).parent
+        if not os.path.exists(parent_path):
+            raise FileNotFoundError(
+                f"path:{parent_path} not found")
+        elif not os.path.isdir(parent_path):
+            raise NotADirectoryError(
+                f"{parent_path} is not a directory"
+            )
     # create a new repo
     os.mkdir(repo_path)
     if logger is not None:
