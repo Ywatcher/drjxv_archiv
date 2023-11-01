@@ -93,7 +93,8 @@ class AnswerParser:
 
     def start_parsing(self):
         while True:
-            task = self.queue_get_task.get(True, 10)
+            # FIXME: here is no waiting limit
+            task = self.queue_get_task.get(True)
             if isinstance(task, TaskStopEvent):
                 self.log("stop")
                 # may block if without `nowait`

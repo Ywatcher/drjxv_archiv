@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import time
+from typing import Callable, Optional
+from util.logger import BaseLogger
 
 
 def zhihu_question_url(question_id) -> str:
@@ -42,3 +45,27 @@ def expand_question(driver):
     except Exception as e:
         # FIXME : if no such button
         pass
+
+
+# modified from
+# https://www.cnblogs.com/moneymaster/p/14606132.html
+def scroll_to_bottom(
+    driver,
+    get_sleep_time: Callable[..., float] = lambda: 5,  # FIXME,
+    logger: Optional[BaseLogger] = None
+):
+    js = 'return document.body.scrollHeight;'
+    height = 0
+    while True:
+        new_height = driver.execute_script(js)
+        if new_height > height:
+            driver.execute_script(
+                'window.scrollTo(0, document.body.scrollHeight)')
+            height = new_height
+            sleep_time = get_sleep_time()
+            time.sleep(sleep_time)
+        else:
+            if logger is not None:
+                logger.log("Scrolled to bottom.")
+            driver.execute_script('window.scrollTo(0, 0)')  # scrolled to bot
+            break

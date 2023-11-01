@@ -4,7 +4,7 @@ from multiprocessing import Queue
 from common import QuestionBriefInfo, AnswerParseTask, TaskStopEvent
 from bs4 import BeautifulSoup as bf
 from selenium.common.exceptions import ElementNotVisibleException
-from util.web_util import zhihu_question_url, close_button, expand_question
+from util.web_util import scroll_to_bottom, zhihu_question_url, close_button, expand_question
 
 
 class QuestionParser:
@@ -57,6 +57,7 @@ class QuestionParser:
             dateModified=dateModified,
             **parsed_question_info
         ))
+        scroll_to_bottom(self.driver, logger=self.logger)
         self.put_answer_tasks_to_queue(question_id, single_parse)
 
     @staticmethod
