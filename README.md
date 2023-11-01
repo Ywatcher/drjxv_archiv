@@ -11,10 +11,10 @@
 
 
 git log 管理版本:
-![Screenshot from 2023-11-02 02-18-11](https://github.com/Ywatcher/drjxv_archiv/assets/93801008/de7efcd1-6bcd-4205-b1ab-70829fc83da0)
+![version_through_git_log](https://github.com/Ywatcher/drjxv_archiv/assets/93801008/de7efcd1-6bcd-4205-b1ab-70829fc83da0)
 
 在 obsidian 中查看回答：
-![Screenshot from 2023-11-02 02-23-39](https://github.com/Ywatcher/drjxv_archiv/assets/93801008/aa012551-6b3c-491f-8734-9204bd7b1172)
+![obsidian_view](https://github.com/Ywatcher/drjxv_archiv/assets/93801008/aa012551-6b3c-491f-8734-9204bd7b1172)
 
 
 ## 环境依赖
