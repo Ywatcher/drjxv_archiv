@@ -6,7 +6,7 @@ from pathlib import Path
 # absolute path to project repository
 # this variable offers a absolute manner to define relative location
 # in this project.
-project_root = Path(__file__).parent.parent.parent.absolute()
+project_root = Path(__file__).parent.parent.absolute()
 
 # path to web_driver
 # Please modify the dict `drivers` to designate the path to web driver images;
