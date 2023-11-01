@@ -57,7 +57,10 @@ class GitOperator:
         self.repo.git.add(file_path_full)
         author = Actor(name=str(author_name), email=str(author_url))
         try:
-            parent_commit = self.get_commit_by_sha(parent_sha)
+            if parent_sha is not None:
+                parent_commit = self.get_commit_by_sha(parent_sha)
+            else:
+                parent_commit = self.repo.head.commit
         except BaseException:
             parent_commit = self.repo.head.commit
         self.repo.index.commit(

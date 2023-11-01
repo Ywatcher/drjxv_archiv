@@ -57,15 +57,19 @@ class AnswerParser:
     @staticmethod
     def parse_content_block(html_text: str) -> Dict[str, str]:
         obj = bf(html_text, 'html.parser')
+        author_info = obj.find('div',class_='AuthorInfo')
+        author_name = author_info.find('meta',itemprop='name').get('content')
+        # author_url =author_info.find('meta',itemprop='url').get('content')
+        author_url = author_info.find('a',class_='UserLink-link').get('href') # real url
         content = obj.find(
             'div', class_='RichContent-inner').find('span').contents
-        author = None  # TODO
         upvoteCount = obj.find('meta', itemprop="upvoteCount").get("content")
         dateCreated = obj.find('meta', itemprop="dateCreated").get("content")
         dateModified = obj.find('meta', itemprop="dateModified").get("content")
         commentCount = obj.find('meta', itemprop='commentCount').get("content")
         return {
-            "author": author,
+            "author_name": author_name,
+            "author_url": author_url,
             "content": content,
             "upvoteCount": upvoteCount,
             "dateCreated": dateCreated,

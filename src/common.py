@@ -7,16 +7,14 @@ from util.time import str2date
 import datetime
 
 from bs4.element import Tag
-# TODO: mv to util
-
-
 
 
 @dataclass
 class AnswerBriefInfo:
     question_id: str
     answer_id: str
-    author: str
+    author_name: str
+    author_url: str
     content: list[Tag]  # html like
     upvoteCount: Union[int, str]
     dateCreated: str
@@ -28,7 +26,8 @@ class AnswerBriefInfo:
             metadata={
                 "type": "answer",
                 "answer_id": self.answer_id,
-                "author": self.author,
+                "author_name": self.author_name,
+                "author_url": self.author_url,
                 "dateCreated": self.dateCreated,
                 "upvoteCount": self.upvoteCount,
                 "commentCount": self.commentCount

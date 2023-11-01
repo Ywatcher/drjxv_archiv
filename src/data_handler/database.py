@@ -3,6 +3,7 @@
 import datetime
 import sqlite3
 from sqlite3 import Error
+from typing import Optional
 from util.db import is_empty
 from util.time import date2str
 # answer_table:
@@ -159,9 +160,13 @@ class DataBase:
     def add_answer(
         self, answer_id: int,
         dateCreated: datetime.datetime,
-        question_id: int, author_id="NULL",  # FIXME
+        question_id: int, author_id: Optional[str] = None,
         to_commit=False
     ):
+        if author_id is not None:
+            author_id = "'{}'".format(author_id)
+        else:
+            author_id = "NULL"
         c = self.conn.cursor()
         dateCreated_s = self._date2str(dateCreated)
         c.executescript(f"""

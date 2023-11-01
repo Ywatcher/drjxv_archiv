@@ -69,8 +69,8 @@ class Master:
                     answer_id=int(answer_id),
                     question_id=int(result.question_id),
                     dateCreated=result.dateCreate_d,
-                    to_commit=False
-                    # FIXME: author id
+                    to_commit=False,
+                    author_id=result.author_url
                 )
                 to_update = True
             if to_update:
@@ -85,8 +85,9 @@ class Master:
                     message=self.format_answer_commit_message(result),
                     modified_datetime=result.dateModified_d,
                     fetched_datetime=fetchedDatetime_d,
-                    parent_sha=head
-                    # author = .., author_url=..
+                    parent_sha=head,
+                    author_name=result.author_name,
+                    author_url=result.author_url
                 )
                 sha = git_latest_commit.hexsha
                 try:
