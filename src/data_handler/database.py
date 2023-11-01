@@ -244,7 +244,10 @@ class DataBase:
             self.conn.commit()
 
     def commit(self):
+        # commit changes to database
         self.conn.commit()
 
     def cancel(self):
-        pass
+        # cancel current changes
+        self.conn.commit()
+        self.conn.rollback()
