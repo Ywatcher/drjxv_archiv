@@ -11,10 +11,11 @@
 
 
 git log 管理版本:
-![version_through_git_log](https://github.com/Ywatcher/drjxv_archiv/assets/93801008/de7efcd1-6bcd-4205-b1ab-70829fc83da0)
+![version_through_git_log](https://github.com/Ywatcher/drjxv_archiv/assets/93801008/9bcdf74d-d982-4d04-8b38-512017e4f22a)
+
 
 在 obsidian 中查看回答：
-![obsidian_view](https://github.com/Ywatcher/drjxv_archiv/assets/93801008/aa012551-6b3c-491f-8734-9204bd7b1172)
+![obsidian view](https://github.com/Ywatcher/drjxv_archiv/assets/93801008/5da0559f-374b-4dc1-9109-3ca0c2019cc6)
 
 
 ## 环境依赖
