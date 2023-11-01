@@ -18,7 +18,6 @@ drivers = {
     "chrome": os.path.join(
         driver_root,
         "chromedriver-linux64",
-        # "/home/ywatcher/.cache/selenium/chromedriver/linux64/118.0.5993.70",
         "chromedriver"),
 
     "firefox": os.path.join(
