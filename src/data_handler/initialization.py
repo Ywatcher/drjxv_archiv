@@ -19,6 +19,17 @@ def make_abs(path: str) -> str:
         return p
 
 
+def update_database(
+    repo_path: str,
+):
+    """
+    introduce new features to database of old version
+    """
+    repo_path = make_abs(repo_path)
+    db_path = get_db_path(repo_path)
+    DataBase.init_database(db_path)
+
+
 def init_new_repo(
     repo_path: str,
     owner_name: Optional[str] = None,

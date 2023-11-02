@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS {title_4_answer_table}VCS (
 query_create_question_table = f"""
 CREATE TABLE IF NOT EXISTS {title_4_question_table} (
     id integer PRIMARY KEY,
-    authorId integer,
+    authorId text,
     dateCreated text
     )
 """
@@ -42,6 +42,15 @@ CREATE TABLE IF NOT EXISTS {title_4_question_table}VCS (
     dateModified text,
     answerCount integer
     )
+"""
+query_create_comment_table = f"""
+CREATE TABLE IF NOT EXISTS {title_4_comment_table} (
+    id integer PRIMARY KEY,
+    authorId text,
+    dateCreated text,
+    parentCommentId integer,
+    replyAuthorId text
+)
 """
 # create a table named GitHead
 # to maintain the current head
@@ -62,6 +71,7 @@ BEGIN
     SELECT RAISE(FAIL, 'only one row!');
 END;
 """
+# TODO: create an author table
 
 
 def init_database_tables(
@@ -73,6 +83,7 @@ def init_database_tables(
         c.execute(query_create_answer_vcs_table)
         c.execute(query_create_answer_table)
         c.execute(query_create_question_vcs_table)
+        c.execute(query_create_comment_table)
         c.executescript(query_create_head_table)
         conn.commit()
         return 0
