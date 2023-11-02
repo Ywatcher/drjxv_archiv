@@ -109,10 +109,46 @@ git，请在您的计算机上安装它；
 问题和回答的富文本，以及它们的 metadata 会组织成 markdown
 的形式写入文件并由 git 提交。每次提交都对应一个单独的文件
 的更新。<br>
-数据库中由五张表，分别包括问题，问题版本，回答，回答版本，
+数据库中由六张表，分别包括问题，问题版本，回答，回答版本，
+评论，
 以及当前的 git head；git head 以及各版本的 hexsha 会被存入
-数据库.
+数据库.<br>
+Questions (问题表)
 
+| id   | authorId | dateCreated |
+| ---- | -------- | ----------- |
+|integer PRIMARY KEY|text|text|
+|问题编号|作者（目前尚无实现）|创建日期|
+
+Answers (回答表)
+| id   | authorId | questionId | dateCreated |
+| ---- | -------- | ---------- | ----------- |
+|integer PRIMARY KEY|text|integer NOT NULL|text |
+|回答编号|作者url|所属问题|创建日期|
+
+QuestionsVCS (问题版本管理)
+| commitId | questionId | dateFetched | dateModified | answerCount |
+| -------- | ---------- | ----------- | ------------ | ----------- |
+|text PRIMARY KEY|interger NOT NULL|text|text|integer|
+|对应git提交的sha|所属问题|爬取日期|修改日期|当前回答数|
+
+AnswersVCS (回答版本管理)
+| commitId | answerId | dateFetched | dateModified | commentCount |
+| -------- | -------- | ----------- | ------------ | ------------ |
+|text PRIMARY KEY|interger NOT NULL|text|text|integer|
+|回答编号|提交的sha|所属回答|爬取日期|修改日期|当前评论数|
+
+Comments (评论表)
+| id   | authorId | dateCreated | parentCommentId | replyAuthorId |
+| ---- | -------- | ----------- | --------------- | ------------- |
+|integer PRIMARY KEY|text|text|integer|text|
+|评论编号|作者url|创建日期|在另哪个评论下（如果有）|回复的用户url（如果有）|
+
+GitHead (提交头，仅有一个 record)
+| id   | sha  |
+| ---- | ---- |
+|integer PRIMARY KEY|text|
+|永远=0|最新的提交sha|
 
 ## 自定义
 在 `src/config.py` 中进行配置；<br>
