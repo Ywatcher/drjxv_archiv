@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from multiprocessing import Queue
+from multiprocessing import Queue, Event
+import multiprocessing
 
 from git import exc
 from common import AnswerBriefInfo, AnswerParseTask, TaskStopEvent
@@ -23,6 +24,7 @@ class AnswerParser:
         self.queue_put_result = queue_put_result
         self.driver = driver
         self.logger = logger
+        self.fin_event = Event()
 
     def parse(self, answer_id, question_id=None):
         self.log(f"parsing answer with id={answer_id}")
@@ -91,7 +93,11 @@ class AnswerParser:
     def get_comments(self):
         pass
 
-    def start_parsing(self):
+    def start_parsing(
+        self,
+        to_stop_flag: "multiprocessing.synchronize.Event"
+    ):
+        self.fin_event.clear()
         while True:
             # FIXME: here is no waiting limit
             task = self.queue_get_task.get(True)
@@ -108,10 +114,13 @@ class AnswerParser:
                     question_id=task.question_id
                 )
             else:
+                self.fin_event.set()
                 raise Exception
 
-        self.log("out")
+        self.log("parsing done.")
         self.driver.close()  # FIXME
+        self.fin_event.set()
+        self.log("out")
 
     def log(self, *args, **kwargs):
         if self.logger is not None:

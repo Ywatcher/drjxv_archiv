@@ -113,38 +113,38 @@ git，请在您的计算机上安装它；
 评论，
 以及当前的 git head；git head 以及各版本的 hexsha 会被存入
 数据库.<br>
-Questions (问题表)
+- Questions (问题表)
 
 | id   | authorId | dateCreated |
 | ---- | -------- | ----------- |
 |integer PRIMARY KEY|text|text|
 |问题编号|作者（目前尚无实现）|创建日期|
 
-Answers (回答表)
+- Answers (回答表)
 | id   | authorId | questionId | dateCreated |
 | ---- | -------- | ---------- | ----------- |
 |integer PRIMARY KEY|text|integer NOT NULL|text |
 |回答编号|作者url|所属问题|创建日期|
 
-QuestionsVCS (问题版本管理)
+- QuestionsVCS (问题版本管理)
 | commitId | questionId | dateFetched | dateModified | answerCount |
 | -------- | ---------- | ----------- | ------------ | ----------- |
 |text PRIMARY KEY|interger NOT NULL|text|text|integer|
 |对应git提交的sha|所属问题|爬取日期|修改日期|当前回答数|
 
-AnswersVCS (回答版本管理)
+- AnswersVCS (回答版本管理)
 | commitId | answerId | dateFetched | dateModified | commentCount |
 | -------- | -------- | ----------- | ------------ | ------------ |
 |text PRIMARY KEY|interger NOT NULL|text|text|integer|
 |回答编号|提交的sha|所属回答|爬取日期|修改日期|当前评论数|
 
-Comments (评论表)
+- Comments (评论表)
 | id   | authorId | dateCreated | parentCommentId | replyAuthorId |
 | ---- | -------- | ----------- | --------------- | ------------- |
 |integer PRIMARY KEY|text|text|integer|text|
 |评论编号|作者url|创建日期|在另哪个评论下（如果有）|回复的用户url（如果有）|
 
-GitHead (提交头，仅有一个 record)
+- GitHead (提交头，仅有一个 record)
 | id   | sha  |
 | ---- | ---- |
 |integer PRIMARY KEY|text|
@@ -152,7 +152,8 @@ GitHead (提交头，仅有一个 record)
 
 ## 自定义
 在 `src/config.py` 中进行配置；<br>
-**您的提交标识：**该项目的存档是设计为由个人管理，并可
+**您的提交标识：**
+该项目的存档是设计为由个人管理，并可
 以互相合并；当合并者众多后，爬取的来源和可靠性可能
 会变得混杂而使整个大存档的置信度降低；您可以通过在
 填充自己的存档时标记来源，来增加辨识度；
@@ -163,7 +164,8 @@ GitHead (提交头，仅有一个 record)
 default_owner_name = "me" # 修改为您的昵称
 default_owner_email = "me@email" # 修改为您的邮箱
 ```
-**回答爬取器的进程数量：**该项目使用多个进程同时爬取
+**回答爬取器的进程数量：**
+该项目使用多个进程同时爬取
 问题和回答，目前已经实现支持的是单个问题爬取进程和
 多个回答爬取进程；
 ```python
@@ -172,7 +174,8 @@ nr_answer_parsers = 3  # 修改回答进程的数量
 # 除此之外还有一个问题爬取进程和一个读取爬取结果并
 # 写入存档进程
 ```
-**仓库的结构：**默认的仓库结构如下，
+**仓库的结构：**
+默认的仓库结构如下，
 ```
 .  # 仓库
 ├── sqlite_database.db  # 数据库文件
@@ -203,7 +206,8 @@ def get_vcs_path(archiv_repo_path: str) -> str:
 在`question_file_format()`, `answer_file_format()`
 中定义。
 ## TODO:
- - [ ] 改为使用事件在爬取与存档进程间通信 
+ - [x] 改为使用事件在爬取与存档进程间通信 
+ - [ ] 解决同时运行 parser 和管理进程的死锁问题
  - [ ] 存档合并的实现
  - [ ] 对操作失败需要回退情形的测试
  - [x] 滚动读取

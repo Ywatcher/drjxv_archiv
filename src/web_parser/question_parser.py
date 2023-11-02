@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from multiprocessing import Queue
+from multiprocessing import Event, Queue
 from common import QuestionBriefInfo, AnswerParseTask, TaskStopEvent
 from bs4 import BeautifulSoup as bf
 from selenium.common.exceptions import ElementNotVisibleException
@@ -19,6 +19,7 @@ class QuestionParser:
         self.queue_put_task = queue_put_task
         self.driver = driver
         self.logger = logger
+        self.fin_event = Event()
 
     def parse(self, question_id, single_parse=True):
         self.log(f"parsing question with id={question_id}")
@@ -78,6 +79,8 @@ class QuestionParser:
         }
 
     def put_answer_tasks_to_queue(self, question_id, single_parse=True):
+        if single_parse:
+            self.fin_event.clear()
         # FIXME: scroll
         question_answers = self.driver.find_elements_by_xpath(
             '//div[@class="ContentItem AnswerItem"]'
@@ -93,8 +96,10 @@ class QuestionParser:
         if single_parse:
             self.queue_put_task.put(TaskStopEvent())
             self.driver.close()
+            self.fin_event.set()
 
     def start_parsing_list(self, question_id_list: list):
+        self.fin_event.clear()
         for question_id in question_id_list:
             print(question_id)
             self.parse(question_id, single_parse=False)
@@ -102,6 +107,7 @@ class QuestionParser:
         self.log("fin")
         self.queue_put_task.put(TaskStopEvent())
         self.driver.close()
+        self.fin_event.set()
 
     def log(self, *args, **kwargs):
         if self.logger is not None:
