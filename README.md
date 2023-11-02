@@ -113,38 +113,43 @@ git，请在您的计算机上安装它；
 评论，
 以及当前的 git head；git head 以及各版本的 hexsha 会被存入
 数据库.<br>
-- Questions (问题表)<br>
+- Questions (问题表)
 
 | id   | authorId | dateCreated |
 | ---- | -------- | ----------- |
 |integer PRIMARY KEY|text|text|
 |问题编号|作者（目前尚无实现）|创建日期|
 
-- Answers (回答表)<br>
+- Answers (回答表)
+
 | id   | authorId | questionId | dateCreated |
 | ---- | -------- | ---------- | ----------- |
 |integer PRIMARY KEY|text|integer NOT NULL|text |
 |回答编号|作者url|所属问题|创建日期|
 
-- QuestionsVCS (问题版本管理)<br>
+- QuestionsVCS (问题版本管理)
+
 | commitId | questionId | dateFetched | dateModified | answerCount |
 | -------- | ---------- | ----------- | ------------ | ----------- |
 |text PRIMARY KEY|interger NOT NULL|text|text|integer|
 |对应git提交的sha|所属问题|爬取日期|修改日期|当前回答数|
 
-- AnswersVCS (回答版本管理)<br>
+- AnswersVCS (回答版本管理)
+
 | commitId | answerId | dateFetched | dateModified | commentCount |
 | -------- | -------- | ----------- | ------------ | ------------ |
 |text PRIMARY KEY|interger NOT NULL|text|text|integer|
 |回答编号|提交的sha|所属回答|爬取日期|修改日期|当前评论数|
 
-- Comments (评论表)<br>
+- Comments (评论表)
+
 | id   | authorId | dateCreated | parentCommentId | replyAuthorId |
 | ---- | -------- | ----------- | --------------- | ------------- |
 |integer PRIMARY KEY|text|text|integer|text|
 |评论编号|作者url|创建日期|在另哪个评论下（如果有）|回复的用户url（如果有）|
 
 - GitHead (提交头，仅有一个 record)
+
 | id   | sha  |
 | ---- | ---- |
 |integer PRIMARY KEY|text|
